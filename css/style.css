@@ -7,45 +7,83 @@ html, body, #map {
     height: 100%;
 }
 
-#search-container {
+.flex-container {
     position: absolute;
+    margin: 0 -6px;
+    height: 28px;
+    display: flex;
+    z-index: 1000;
+    justify-content: space-between;
+}
+
+.search-container {
     top: 12px;
     left: 55px;
-    width: calc(100% - 55px);
-    margin-right: 12px;
-    height: 36px;
-    z-index: 1000;
+    right: 12px;
 }
 
-#results {
-    width: calc(20% - 55px);
-    height: 36px;
+.slider-container {
+    top: 44px;
+    left: 55px;
+    right: 12px;
+}
+
+.search {
+    margin: 0 5px;
+    display: flex;
+    flex-basis: 80%;
+    box-shadow: 2px 2px #333;
+}
+
+#low, #high {
+    flex-basis: 15%;
+    margin: 0 5px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    box-shadow: 2px 2px #333;
+}
+
+.results {
+    flex-basis: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: white;
     font-size: 1.5rem;
-    padding-left: 6px;
-    display: inline-block;
+    margin: 0 5px;
     box-shadow: 2px 2px #333;
 }
 
-#search {
-    width: calc(80% - 55px);
-    font-size: 1.5rem;
+input#search {
     padding-left: 6px;
-    display: inline-block;
-    box-shadow: 2px 2px #333;
+    width: 100%;
+    border: none;
 }
 
 .marker {
     color: #fff;
 }
 
-.slider {
-    position: absolute;
-    top: 52px;
-    left: 55px;
-    width: 140px;
-    height: 24px;
+.spacer {
+    display: flex;
     background-color: #fff;
-    box-shadow: 2px 2px; #aaa;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px; 
+    padding: 6px;
+    width: 100%;
+    box-shadow: 2px 2px #333;
+}
+
+.slider {
+    display: flex;
+    position: relative;
     z-index: 1000;
+    width: 100%;
+}
+
+#grade {
+    width: 100%
 }

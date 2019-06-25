@@ -17,12 +17,22 @@
     </head>
     <body>
          <div id="map"></div>
-         <div id="search-container">
-             <input id="search"></input>
-             <div id="results"></div>
+         <div class="flex-container search-container">
+             <div class="search">
+                 <input id="search" placeholder="search by name"></input>
+             </div>
+             <div class="results">
+                 <span id="results"></span>
+             </div>
          </div>
-         <div class="slider">
-             <input type="range" multiple value="0,15"></input>
+         <div class="flex-container slider-container">
+             <div id="low"></div>
+             <div class="spacer">
+                 <div class="slider">
+                     <input id="grade" type="range" multiple value="0,100"></input>
+                 </div>
+             </div>
+             <div id="high"></div>
          </div>
     </body>
 </html>

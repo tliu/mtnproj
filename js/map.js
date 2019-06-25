@@ -10,28 +10,69 @@ document.addEventListener("DOMContentLoaded",() => {
     db.destroy().then(() => {
         db = new PouchDB("mtnproj");
         initDB().then(() => {
-            createMarkers();
-        });;
+            indexDB().then(() => {
+                createMarkers();
+            })
+        });
     });
 
 });
 
 const addListeners = () => {
     document.getElementById("search").addEventListener("input", updateMarkers);
+    var grade = document.getElementById("grade");
+    grade.addEventListener("mouseup", updateMarkers);
+    grade.nextElementSibling.addEventListener('mouseup', updateMarkers);
+    grade.addEventListener("input", updateGrade);
+    grade.nextElementSibling.addEventListener('input', updateGrade);
+}
+
+const updateGrade = () => {
+    const grade = document.getElementById("grade");
+    const low = Math.round((grade.valueLow / 100) * 15);
+    const high = Math.round((grade.valueHigh / 100) * 15);
+    document.getElementById("low").innerHTML = `V${low}`;
+    document.getElementById("high").innerHTML = `V${high}`;
+}
+
+const indexDB = () => {
+    return Promise.all([
+        db.createIndex({index: {fields: ["calcGrade"]}}),
+        db.createIndex({index: {fields: ["name"]}}),
+        db.createIndex({index: {fields: ["name", "calcGrade"]}}),
+    ]);
 }
 
 const updateMarkers = () => {
+    const grade = document.getElementById("grade");
+    const low = Math.round((grade.valueLow / 100) * 15);
+    const high = Math.round((grade.valueHigh / 100) * 15);
     const val = document.getElementById("search").value;
+    let sel = {
+        calcGrade: {
+            $gte: low,
+            $lte: high
+        }
+    }
+
+    if (val != "") {
+        sel.name = {$regex: `.*${val}.*`}
+    }
     db.find({
-        selector: {name: {$regex: `.*${val}.*`}},
-        fields: ["id", "name"],
+        selector: sel,
+        fields: ["id", "name", "calcGrade"],
     }).then(res => {
         toggleMarkers(res.docs.map(doc => {
             return doc.id;
         }));
+        updateBoulderCounter(res.docs.length);
     }).catch(err => {
         console.log(err);
     });
+}
+
+const updateBoulderCounter = len => {
+    document.getElementById("results").innerHTML = `${len}`
 }
 
 const toggleMarkers = showIds => {
@@ -44,7 +85,7 @@ const toggleMarkers = showIds => {
 }
 
 const init = () => {
-    const map = L.map('map').setView([42.510583, -71.006972], 18);
+    const map = L.map('map').setView([42.510583, -71.006972], 15);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGxpdSIsImEiOiJjand3aTRnNHowanB6M3ltejlpZG5hZTY5In0.8UEgMFo3dvgXq8avCl8o3A', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -73,20 +114,22 @@ const initDB = () => {
 }
 
 const createMarkers = () => {
-    db.allDocs({
-        include_docs: true
+    db.find({
+        selector: {id: {$regex: "^(?![_design]).*"}},
     }).then(res => {
-        res.rows.forEach(row => {
-            key = `${row.doc.latitude},${row.doc.longitude}`
+        res.docs.forEach(doc => {
+            key = `${doc.latitude},${doc.longitude}`
             if (key in geoToClimb) {
-                geoToClimb[key].push(row.doc)
+                geoToClimb[key].push(doc)
             } else {
-                geoToClimb[key] = [row.doc]
+                geoToClimb[key] = [doc]
             }
         });
         for (let [key, value] of Object.entries(geoToClimb)) {
             addMarker(key, value)
         }
+        updateMarkers();
+        updateGrade();
     }).catch(err => {
         console.log(err);
     });
