@@ -1,0 +1,71 @@
+{
+    "routes": [
+        {
+            "id": 116541532,
+            "name": "Gem project",
+            "type": "Boulder",
+            "rating": "V10",
+            "stars": 4,
+            "starVotes": 1,
+            "pitches": "",
+            "location": [
+                "Massachusetts",
+                "Lynn Woods",
+                "Stone Tower Area",
+                "The Gem Boulders"
+            ],
+            "url": "https:\/\/www.mountainproject.com\/route\/116541532\/gem-project",
+            "imgSqSmall": "https:\/\/cdn-files.apstatic.com\/climb\/116541539_sqsmall_1550444233.jpg",
+            "imgSmall": "https:\/\/cdn-files.apstatic.com\/climb\/116541539_small_1550444233.jpg",
+            "imgSmallMed": "https:\/\/cdn-files.apstatic.com\/climb\/116541539_smallMed_1550444233.jpg",
+            "imgMedium": "https:\/\/cdn-files.apstatic.com\/climb\/116541539_medium_1550444233.jpg",
+            "longitude": -70.9991,
+            "latitude": 42.5101
+        },
+        {
+            "id": 111941796,
+            "name": "Black Pearl",
+            "type": "Boulder",
+            "rating": "V10",
+            "stars": 4,
+            "starVotes": 1,
+            "pitches": "",
+            "location": [
+                "Massachusetts",
+                "Lynn Woods",
+                "Greater Lynn Woods Area",
+                "Ship Rock"
+            ],
+            "url": "https:\/\/www.mountainproject.com\/route\/111941796\/black-pearl",
+            "imgSqSmall": "",
+            "imgSmall": "",
+            "imgSmallMed": "",
+            "imgMedium": "",
+            "longitude": -70.992,
+            "latitude": 42.4912
+        },
+        {
+            "id": 117069999,
+            "name": "Devolution",
+            "type": "Boulder",
+            "rating": "V10",
+            "stars": 4,
+            "starVotes": 1,
+            "pitches": "",
+            "location": [
+                "Massachusetts",
+                "Lynn Woods",
+                "Weetamoo Area",
+                "Elephant Boulder"
+            ],
+            "url": "https:\/\/www.mountainproject.com\/route\/117069999\/devolution",
+            "imgSqSmall": "",
+            "imgSmall": "",
+            "imgSmallMed": "",
+            "imgMedium": "",
+            "longitude": -70.9956,
+            "latitude": 42.4997
+        }
+    ],
+    "success": 1
+}

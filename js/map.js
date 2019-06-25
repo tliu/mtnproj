@@ -1,7 +1,7 @@
 var db;
 var map;
 var markers = {};
-
+var geoToClimb = {};
 
 document.addEventListener("DOMContentLoaded",() => {
     map = init();
@@ -17,18 +17,20 @@ document.addEventListener("DOMContentLoaded",() => {
 });
 
 const addListeners = () => {
-    document.getElementById("search").addEventListener("input", ev => {
-        const val = document.getElementById("search").value;
-        db.find({
-            selector: {name: {$regex: `.*${val}.*`}},
-            fields: ["id", "name"],
-        }).then(res => {
-            toggleMarkers(res.docs.map(doc => {
-                return doc.id;
-            }));
-        }).catch(err => {
-            console.log(err);
-        });
+    document.getElementById("search").addEventListener("input", updateMarkers);
+}
+
+const updateMarkers = () => {
+    const val = document.getElementById("search").value;
+    db.find({
+        selector: {name: {$regex: `.*${val}.*`}},
+        fields: ["id", "name"],
+    }).then(res => {
+        toggleMarkers(res.docs.map(doc => {
+            return doc.id;
+        }));
+    }).catch(err => {
+        console.log(err);
     });
 }
 
@@ -56,11 +58,18 @@ const init = () => {
 }
 
 const initDB = () => {
+    Object.entries(ROUTES).forEach(([grade, routes]) => {
+        routes.map(route => {
+            route._id = "" + route["id"];
+            route.calcGrade = parseInt(grade);
+        });
+    });
+    routes = Object.values(ROUTES).flat();
     return Promise.all(
-        MTN_PROJ["routes"].map((doc) => {
-            doc._id = "" + doc["id"];
-            return db.put(doc);
-        }));
+        routes.map(route => {
+            return db.put(route);
+        })
+    );
 }
 
 const createMarkers = () => {
@@ -68,24 +77,43 @@ const createMarkers = () => {
         include_docs: true
     }).then(res => {
         res.rows.forEach(row => {
-            addMarker(row.doc)
+            key = `${row.doc.latitude},${row.doc.longitude}`
+            if (key in geoToClimb) {
+                geoToClimb[key].push(row.doc)
+            } else {
+                geoToClimb[key] = [row.doc]
+            }
         });
+        for (let [key, value] of Object.entries(geoToClimb)) {
+            addMarker(key, value)
+        }
     }).catch(err => {
         console.log(err);
     });
 }
 
-const addMarker = doc => {
-    const marker = L.marker([doc.latitude, doc.longitude], {
-        title: doc.name.split()[0],
+const addMarker = (key, docs) => {
+    html = "";
+    let lat, lng;
+    let total = 0;
+    docs.forEach(doc => {
+        html += `<p>${doc.name}, ${doc.rating}<br>${doc.stars}<br>(<a href=${doc.url} target=_blank>link</a>)</p>`
+        lat = doc.latitude;
+        lng = doc.longitude;
+        total += doc.stars;
+    });
+    let avg = total / docs.length;
+    const marker = L.marker([lat, lng], {
         icon: new L.ExtraMarkers.icon({
             shape: "penta",
-            markerColor: starColor(doc.stars),
-            innerHTML: `<p class="marker">${doc.rating}</p>`
+            markerColor: starColor(avg),
+            innerHTML: `<p class="marker">${docs.length}</p>`
         }),
     }).addTo(map);
-    markers[`${doc.id}`] = marker
-    marker.bindPopup(doc.name + "<br>" + doc.rating);
+    docs.forEach(doc => {
+        markers[`${doc.id}`] = marker
+    });
+    marker.bindPopup(html);
 }
 
 var COLOR_MAP = ["red", "orange-dark", "orange", "green-dark", "green", "green-light"];

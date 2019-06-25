@@ -19,3 +19,14 @@ html, body, #map {
 .marker {
     color: #fff;
 }
+
+.slider {
+    position: absolute;
+    top: 52px;
+    left: 55px;
+    width: 140px;
+    height: 24px;
+    background-color: #fff;
+    box-shadow: 1px 1px; #aaa;
+    z-index: 1000;
+}
