@@ -7,13 +7,32 @@ html, body, #map {
     height: 100%;
 }
 
-#search {
+#search-container {
     position: absolute;
     top: 12px;
     left: 55px;
-    width: 140px;
-    height: 24px;
+    width: calc(100% - 55px);
+    margin-right: 12px;
+    height: 36px;
     z-index: 1000;
+}
+
+#results {
+    width: calc(20% - 55px);
+    height: 36px;
+    background-color: white;
+    font-size: 1.5rem;
+    padding-left: 6px;
+    display: inline-block;
+    box-shadow: 2px 2px #333;
+}
+
+#search {
+    width: calc(80% - 55px);
+    font-size: 1.5rem;
+    padding-left: 6px;
+    display: inline-block;
+    box-shadow: 2px 2px #333;
 }
 
 .marker {
@@ -27,6 +46,6 @@ html, body, #map {
     width: 140px;
     height: 24px;
     background-color: #fff;
-    box-shadow: 1px 1px; #aaa;
+    box-shadow: 2px 2px; #aaa;
     z-index: 1000;
 }
