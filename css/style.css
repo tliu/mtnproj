@@ -1,10 +1,28 @@
 body {
     padding: 0;
     margin: 0;
+    font-family: "Helvetica Neue", Helvetica;
 }
 html, body, #map {
     width: 100vw;
     height: 100%;
+}
+
+#loading {
+    width: 100vw;
+    height: 100%;
+    z-index: 1071;
+    display: flex;
+    font-size: 300%;
+    align-items: center;
+    justify-content: center;
+    background-color: #aaa;
+    opacity: .7;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .flex-container {

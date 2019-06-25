@@ -1,6 +1,11 @@
 var db;
 var map;
+var loading = {
+    total: 0,
+    count: 0
+};
 var markers = {};
+var allMarkers = [];
 var geoToClimb = {};
 
 document.addEventListener("DOMContentLoaded",() => {
@@ -10,9 +15,7 @@ document.addEventListener("DOMContentLoaded",() => {
     db.destroy().then(() => {
         db = new PouchDB("mtnproj");
         initDB().then(() => {
-            indexDB().then(() => {
-                createMarkers();
-            })
+            updateMarkers();
         });
     });
 
@@ -22,7 +25,9 @@ const addListeners = () => {
     document.getElementById("search").addEventListener("input", updateMarkers);
     var grade = document.getElementById("grade");
     grade.addEventListener("mouseup", updateMarkers);
+    grade.addEventListener("touchend", updateMarkers);
     grade.nextElementSibling.addEventListener('mouseup', updateMarkers);
+    grade.nextElementSibling.addEventListener('touchend', updateMarkers);
     grade.addEventListener("input", updateGrade);
     grade.nextElementSibling.addEventListener('input', updateGrade);
 }
@@ -54,17 +59,13 @@ const updateMarkers = () => {
             $lte: high
         }
     }
-
     if (val != "") {
         sel.name = {$regex: `.*${val}.*`}
     }
     db.find({
         selector: sel,
-        fields: ["id", "name", "calcGrade"],
     }).then(res => {
-        toggleMarkers(res.docs.map(doc => {
-            return doc.id;
-        }));
+        createMarkers(res);
         updateBoulderCounter(res.docs.length);
     }).catch(err => {
         console.log(err);
@@ -98,6 +99,7 @@ const init = () => {
     return map
 }
 
+
 const initDB = () => {
     Object.entries(ROUTES).forEach(([grade, routes]) => {
         routes.map(route => {
@@ -106,33 +108,41 @@ const initDB = () => {
         });
     });
     routes = Object.values(ROUTES).flat();
+    loading.total = routes.length;
     return Promise.all(
         routes.map(route => {
-            return db.put(route);
+            db.put(route).then(() => {
+                loading.count += 1;
+                updateLoading();
+                return Promise.resolve();
+            });
         })
     );
 }
 
-const createMarkers = () => {
-    db.find({
-        selector: {id: {$regex: "^(?![_design]).*"}},
-    }).then(res => {
-        res.docs.forEach(doc => {
-            key = `${doc.latitude},${doc.longitude}`
-            if (key in geoToClimb) {
-                geoToClimb[key].push(doc)
-            } else {
-                geoToClimb[key] = [doc]
-            }
-        });
-        for (let [key, value] of Object.entries(geoToClimb)) {
-            addMarker(key, value)
-        }
-        updateMarkers();
-        updateGrade();
-    }).catch(err => {
-        console.log(err);
+const updateLoading = () => {
+    document.getElementById("load").innerHTML = `${loading.count} / ${loading.total}`;
+}
+
+const createMarkers = (res) => {
+    allMarkers.forEach(marker => {
+        marker.remove()
     });
+    allMarkers = []
+    geoToClimb = {}
+    res.docs.forEach(doc => {
+        key = `${doc.latitude},${doc.longitude}`
+        if (key in geoToClimb) {
+            geoToClimb[key].push(doc)
+        } else {
+            geoToClimb[key] = [doc]
+        }
+    });
+    for (let [key, value] of Object.entries(geoToClimb)) {
+        addMarker(key, value)
+    }
+    updateGrade();
+    document.getElementById("loading").style.display = "none"
 }
 
 const addMarker = (key, docs) => {
@@ -156,6 +166,7 @@ const addMarker = (key, docs) => {
     docs.forEach(doc => {
         markers[`${doc.id}`] = marker
     });
+    allMarkers.push(marker);
     marker.bindPopup(html);
 }
 
