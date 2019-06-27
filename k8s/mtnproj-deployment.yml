@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mtnproj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mtnproj
+  template:
+    metadata:
+      labels: 
+        app: mtnproj
+    spec:
+      containers:
+      - image: localhost:32000/mtnproj
+        imagePullPolicy: Always
+        name: mtnproj
+        ports:
+        - containerPort: 80

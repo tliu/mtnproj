@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mtnproj
+spec:
+  type: "LoadBalancer"
+  ports:
+  - name: "http"
+    port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    name: mtnproj
