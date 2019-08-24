@@ -170,7 +170,7 @@ const addMarker = (key, docs) => {
     marker.bindPopup(html);
 }
 
-var COLOR_MAP = ["red", "orange-dark", "orange", "green-dark", "green", "green-light"];
+var COLOR_MAP = ["red", "orange", "orange", "yellow", "green-light", "green-light"];
 const starColor = stars => {
     return COLOR_MAP[Math.round(stars)];
 }
