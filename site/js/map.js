@@ -5,6 +5,7 @@ var loading = {
     count: 0
 };
 var markers = {};
+var climbs = {};
 var allMarkers = [];
 var geoToClimb = {};
 
@@ -30,6 +31,7 @@ const addListeners = () => {
     grade.nextElementSibling.addEventListener('touchend', updateMarkers);
     grade.addEventListener("input", updateGrade);
     grade.nextElementSibling.addEventListener('input', updateGrade);
+    document.getElementById("close-boulders").addEventListener("click", hideBoulderList);
 }
 
 const updateGrade = () => {
@@ -66,7 +68,6 @@ const updateMarkers = () => {
         selector: sel,
     }).then(res => {
         createMarkers(res);
-        updateBoulderCounter(res.docs.length);
     }).catch(err => {
         console.log(err);
     });
@@ -95,7 +96,8 @@ const init = () => {
         id: 'mapbox.satellite'
     }).addTo(map);
 
-    //map.locate({setView: true, maxZoom: 18})
+    L.control.locate({}).addTo(map);
+    //map.locate({setView: true, maxZoom: 18, watch: true, enableHighAccuracy: true})
     return map
 }
 
@@ -146,11 +148,11 @@ const createMarkers = (res) => {
 }
 
 const addMarker = (key, docs) => {
-    html = "";
+    let html = "";
     let lat, lng;
     let total = 0;
     docs.forEach(doc => {
-        html += `<p>${doc.name}, ${doc.rating}<br>${doc.stars}<br>(<a href=${doc.url} target=_blank>link</a>)</p>`
+        html += `<a class="noclass" href=${doc.url} target=_blank><div class="boulder"><h3>${doc.name}</h3><h4>${doc.rating} | ${doc.stars} stars</h4></div></a>`
         lat = doc.latitude;
         lng = doc.longitude;
         total += doc.stars;
@@ -162,13 +164,28 @@ const addMarker = (key, docs) => {
             markerColor: starColor(avg),
             innerHTML: `<p class="marker">${docs.length}</p>`
         }),
-    }).addTo(map);
+    });
     docs.forEach(doc => {
         markers[`${doc.id}`] = marker
     });
+
+    climbs[marker.getLatLng()] = html
+    marker.on("click",  (e) => {
+      document.getElementById("boulder-body").innerHTML = climbs[e.target.getLatLng()];
+      showBoulderList();
+    });
     allMarkers.push(marker);
-    marker.bindPopup(html);
+    marker.addTo(map);
 }
+
+const showBoulderList = () => {
+    document.getElementById("boulders").style.display = "block";
+}
+
+const hideBoulderList = () => {
+    document.getElementById("boulders").style.display = "none";
+}
+
 
 var COLOR_MAP = ["red", "orange", "orange", "yellow", "green-light", "green-light"];
 const starColor = stars => {
