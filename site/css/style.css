@@ -124,6 +124,7 @@ input#search {
 }
 
 #boulders {
+    display: none;
     position: absolute;
     bottom: 0;
     border-top-left-radius: 4px;
